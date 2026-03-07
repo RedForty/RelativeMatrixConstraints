@@ -248,9 +248,10 @@ def create_relative_matrix_constraint(source_ref, source_driven, target_ref, tar
     
     cmds.connectAttr(f"{mult_matrix}.matrixSum", f"{decompose}.inputMatrix")
     
-    # Connect to target
-    cmds.connectAttr(f"{decompose}.outputTranslate", f"{target_driven}.translate")
-    cmds.connectAttr(f"{decompose}.outputRotate", f"{target_driven}.rotate")
+    # Connect to target using individual axes so Maya's bakeResults can properly bake
+    for axis in ("X", "Y", "Z"):
+        cmds.connectAttr(f"{decompose}.outputTranslate{axis}", f"{target_driven}.translate{axis}")
+        cmds.connectAttr(f"{decompose}.outputRotate{axis}", f"{target_driven}.rotate{axis}")
     
     # Create network node to store metadata
     network_node = create_constraint_network_node(
